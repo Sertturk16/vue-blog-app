@@ -6,30 +6,40 @@ const state = {
 }
 const getters = {}
 const actions = {
-  signUp ({commit} ,payload) {
+  signUp ({commit, dispatch} ,payload) {
     return new Promise((resolve, reject) => {
       $service.signUp.post('', {email: payload.email, password: payload.password, returnSecureToken: true}).then((res) => {
         commit('_setToken', res.data.idToken)
+        localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
+        dispatch('startTimer', res.data.expiresIn*1000)
         resolve()
       }).catch((err) => {
         reject(err.response.status)
       })
     })
   },
-  login ({commit}, payload) {
+  login ({commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       $service.login.post('', {email: payload.email, password: payload.password, returnSecureToken: true})
       .then((res) => {
         commit('_setToken', res.data.idToken)
+        localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
+        dispatch('startTimer', res.data.expiresIn*1000)
         resolve()
       }).catch((err) => {
-        console.log(err)
         reject(err.response.status)
       })
     })
   },
   logout ({commit}) {
     commit('_setToken', '')
+    window.location.reload()
+  },
+  startTimer ({dispatch}, payload) {
+    console.log(payload)
+    setTimeout(() => {
+      dispatch('logout')
+    }, payload)
   }
 }
 const mutations = {
@@ -37,6 +47,7 @@ const mutations = {
     if (payload === '') {
       Vue.prototype.$user.set({role: 'guest'})
       localStorage.removeItem('token')
+      localStorage.removeItem('expires_in')
     } else {
       Vue.prototype.$user.set({role: 'user'})
       localStorage.setItem('token', payload)

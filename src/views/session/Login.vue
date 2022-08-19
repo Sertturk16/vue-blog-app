@@ -3,16 +3,20 @@
     <div class="session">
       <p>Don't have an account? <router-link to="/sign-up">Sign Up</router-link></p>
       <h2 class="dojo-h2">Login to Dojo-Blog</h2>
-      <v-form class="dojo-form">
+      <v-form class="dojo-form" ref="loginForm">
         <v-text-field
           prepend-inner-icon="mdi-email"
           class="my-2 dojo-input"
           label="Email"
           hide-details="auto"
-          type="text"
+          type="email"
           outlined
           dense
           v-model="email"
+          :rules="[
+             v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || '',
+             v => !!v || ''
+          ]"
         ></v-text-field>
         <v-text-field
           prepend-inner-icon="mdi-lock"
@@ -22,6 +26,9 @@
           type="password"
           outlined
           dense
+          :rules="[
+             v => !!v || ''
+          ]"
           v-model="password"
         ></v-text-field>
         <div class="dojo-alert">
@@ -46,6 +53,10 @@ export default {
     ...mapActions(['login']),
     _login() {
       this.error = false
+      if (this.$refs.loginForm.validate() === false) {
+        this.error = true
+        return
+      }
       this.login({email: this.email, password: this.password})
       .catch((err) => {
         if(err === 400) {

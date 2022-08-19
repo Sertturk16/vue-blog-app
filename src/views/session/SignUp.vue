@@ -3,7 +3,7 @@
   <div class="session">
     <p>Already have an account? <router-link to="login">Login</router-link></p>
     <h2 class="dojo-h2">Sign Up to Dojo-Blog</h2>
-    <v-form class="dojo-form">
+    <v-form class="dojo-form" ref="signUpForm">
       <v-text-field
         prepend-inner-icon="mdi-account"
         class="my-2 dojo-input"
@@ -13,6 +13,9 @@
         outlined
         dense
         v-model="first_name"
+        :rules="[
+          v => !!v || ''
+        ]"
       ></v-text-field>
       <v-text-field
         prepend-inner-icon="mdi-account"
@@ -23,6 +26,9 @@
         outlined
         dense
         v-model="last_name"
+        :rules="[
+          v => !!v || ''
+        ]"
       ></v-text-field>
       <v-text-field
         prepend-inner-icon="mdi-account"
@@ -33,16 +39,23 @@
         outlined
         dense
         v-model="username"
+        :rules="[
+          v => !!v || ''
+        ]"
       ></v-text-field>
       <v-text-field
         prepend-inner-icon="mdi-email"
         class="my-2 dojo-input"
         label="Email"
         hide-details="auto"
-        type="text"
+        type="email"
         outlined
         dense
         v-model="email"
+        :rules="[
+          v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || '',
+          v => !!v || ''
+        ]"
       ></v-text-field>
       <v-text-field
         prepend-inner-icon="mdi-lock"
@@ -53,9 +66,12 @@
         outlined
         dense
         v-model="password"
+        :rules="[
+          v => !!v || ''
+        ]"
       ></v-text-field>
       <div class="dojo-alert">
-        <p v-if="false">Unexpected error occured.</p>
+        <p v-if="invalid">The information you entered is invalid.</p>
       </div>
       <button @click.prevent="_signUp" class="dojo-btn">Sign Up</button>
     </v-form>
@@ -72,12 +88,16 @@ export default {
     username: '',
     email: '',
     password: '',
-    error: false
+    invalid: false,
   }),
   methods: {
     ...mapActions(['signUp']),
     _signUp() {
-      this.error = false
+      this.invalid = false
+      if (this.$refs.signUpForm.validate() === false) {
+        this.invalid = true
+        return
+      }
       this.signUp({
         fist_name: this.first_name,
         last_name: this.last_name,
@@ -86,7 +106,7 @@ export default {
         password: this.password
       }).catch((err) => {
         if(err === 400) {
-          this.error = true
+          this.invalid = true
         }  
       })
     }

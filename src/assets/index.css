@@ -16,6 +16,18 @@
   color: #333 !important;
 }
 
+.dojo-color {
+  color: #f1356d !important;
+}
+
+.dojo-mobile-active .v-list-item--link {
+  background-color: rgba(241, 53, 109, 0.8);
+}
+
+.dojo-mobile-active .v-list-item__title {
+  color: white;
+}
+
 .navbar {
   padding: 20px;
   display: flex;
@@ -25,19 +37,39 @@
   margin: 0 auto;
   border-bottom: 1px solid #f2f2f2;
 }
+
+.mobile-nav-active .v-list-item__title {
+  color: #f1356d;
+}
+
+.navbar .v-list-item__title {
+  font-size: 16px !important;
+}
 .navbar h1 {
   color: #f1356d;
 }
 .navbar .links {
   margin-left: auto;
 }
-.navbar a {
+.navbar .links a {
   margin-left: 16px;
-  text-decoration: none;
   padding: 6px;
 }
-.navbar a:hover {
+.navbar .links a:hover {
   color: #f1356d;
+}
+
+.navbar .menu-icon {
+  margin-left: auto;
+}
+
+.navbar a {
+  text-decoration: none;
+}
+
+.mobile-nav h1 {
+  padding: 20px;
+  border-bottom: 1px solid #f2f2f2;
 }
 .content {
   width: 100%;
