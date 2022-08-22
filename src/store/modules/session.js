@@ -2,7 +2,8 @@ import Vue from "vue"
 import { $service } from "@/custom_axios"
 const state = {
   isUser: false,
-  token: ''
+  token: '',
+  user: null
 }
 const getters = {}
 const actions = {
@@ -12,7 +13,12 @@ const actions = {
         commit('_setToken', res.data.idToken)
         localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
         dispatch('startTimer', res.data.expiresIn*1000)
-        resolve()
+        $service.main.put(`/users/${res.data.localId}.json`, {email: payload.email, first_name: payload.first_name, last_name: payload.last_name, username: payload.username})
+        .then(() => {
+          debugger
+          commit('_setUser', payload)
+          resolve()
+        })
       }).catch((err) => {
         reject(err.response.status)
       })
@@ -25,7 +31,10 @@ const actions = {
         commit('_setToken', res.data.idToken)
         localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
         dispatch('startTimer', res.data.expiresIn*1000)
-        resolve()
+        $service.main.get(`/users/${res.data.localId}.json`).then(user => {
+          commit('_setUser', {...user.data, password: payload.password})
+          resolve()
+        })
       }).catch((err) => {
         reject(err.response.status)
       })
@@ -33,6 +42,7 @@ const actions = {
   },
   logout ({commit}) {
     commit('_setToken', '')
+    commit('_setUser', null)
     window.location.reload()
   },
   startTimer ({dispatch}, payload) {
@@ -43,6 +53,9 @@ const actions = {
   }
 }
 const mutations = {
+  _setUser (state, payload) {
+    state.user = JSON.parse(JSON.stringify(payload))
+  },
   _setToken (state, payload) {
     if (payload === '') {
       Vue.prototype.$user.set({role: 'guest'})
