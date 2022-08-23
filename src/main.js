@@ -4,6 +4,7 @@ import router from './router'
 import VueRouterUserRoles from "vue-router-user-roles"
 import store from './store'
 import { initializeApp } from "firebase/app"
+import { getFirestore } from "firebase/firestore";
 
 import './assets/index.css'
 import vuetify from './plugins/vuetify'
@@ -22,8 +23,14 @@ const firebaseConfig = {
   measurementId: "G-3XLCT86YV8"
 }
 
-initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfig)
+export const db = getFirestore(app);
 
+if (localStorage.getItem('token')) {
+  Vue.prototype.$user.set({role: 'user'})
+} else {
+  Vue.prototype.$user.set({role: 'guest'})
+}
 new Vue({
   router,
   store,

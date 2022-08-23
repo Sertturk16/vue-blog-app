@@ -1,5 +1,7 @@
 import Vue from "vue"
+import {doc, getDoc, setDoc} from 'firebase/firestore'
 import { $service } from "@/custom_axios"
+import { db } from "@/main"
 const state = {
   isUser: false,
   token: '',
@@ -9,13 +11,14 @@ const getters = {}
 const actions = {
   signUp ({commit, dispatch} ,payload) {
     return new Promise((resolve, reject) => {
+      console.log(payload)
       $service.signUp.post('', {email: payload.email, password: payload.password, returnSecureToken: true}).then((res) => {
-        commit('_setToken', res.data.idToken)
-        localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
-        dispatch('startTimer', res.data.expiresIn*1000)
-        $service.main.put(`/users/${res.data.localId}.json`, {email: payload.email, first_name: payload.first_name, last_name: payload.last_name, username: payload.username})
+        let ref = doc(db, "users", res.data.localId)
+        setDoc(ref, {email: payload.email, first_name: payload.first_name, last_name: payload.last_name, username: payload.username})
         .then(() => {
-          debugger
+          commit('_setToken', res.data.idToken)
+          localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
+          dispatch('startTimer', res.data.expiresIn*1000)
           commit('_setUser', payload)
           resolve()
         })
@@ -28,11 +31,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       $service.login.post('', {email: payload.email, password: payload.password, returnSecureToken: true})
       .then((res) => {
-        commit('_setToken', res.data.idToken)
-        localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
-        dispatch('startTimer', res.data.expiresIn*1000)
-        $service.main.get(`/users/${res.data.localId}.json`).then(user => {
-          commit('_setUser', {...user.data, password: payload.password})
+        let ref = doc(db, "users", res.data.localId)
+        getDoc(ref).then(user => {
+          commit('_setUser', {...user.data(), id: res.data.localId})
+          commit('_setToken', res.data.idToken)
+          localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
+          dispatch('startTimer', res.data.expiresIn*1000)
           resolve()
         })
       }).catch((err) => {
@@ -43,7 +47,6 @@ const actions = {
   logout ({commit}) {
     commit('_setToken', '')
     commit('_setUser', null)
-    window.location.reload()
   },
   startTimer ({dispatch}, payload) {
     console.log(payload)
@@ -54,7 +57,7 @@ const actions = {
 }
 const mutations = {
   _setUser (state, payload) {
-    state.user = JSON.parse(JSON.stringify(payload))
+    payload === null ? localStorage.removeItem('user') : localStorage.setItem('user', JSON.stringify(payload))
   },
   _setToken (state, payload) {
     if (payload === '') {

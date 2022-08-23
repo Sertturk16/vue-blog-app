@@ -16,26 +16,45 @@
         v-model="body"
         placeholder="Body"
       />
-      <label>Author:</label>
-      <input
-        type="text"
-        required
-        v-model="title"
-        placeholder="Author"
-      />
-      <button >Add Blog</button>
+      <button @click.prevent="_createNewBlog()">Add Blog</button>
+      <v-snackbar
+      v-model="toast"
+      top
+      right
+      :timeout="1000"
+      color="#f1356d"
+      width="auto"
+      >
+      Blog Successfully Created!
+      </v-snackbar>
     </form>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data () {
     return {
       title: '',
       body: '',
-      author: ''
+      toast: false
     }
+  },
+  methods: {
+    ...mapActions(['getUserBlogs','createNewBlog']),
+    _createNewBlog() {
+      let self = this
+      this.createNewBlog({body: this.body, title: this.title})
+      .then(() => {
+        self.toast = true
+        self.title = ''
+        self.body = ''
+      })
+    }
+  },
+  mounted () {
+    this.getUserBlogs()
   }
 }
 </script>

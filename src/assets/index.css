@@ -16,6 +16,11 @@
   color: #333 !important;
 }
 
+.v-dialog--active .v-card {
+  padding: 15px 0;
+  border-radius: 10px;
+}
+
 .dojo-color {
   color: #f1356d !important;
 }
@@ -165,23 +170,44 @@
   max-width: 300px;
 }
 
-.dojo-textarea .create textarea {
+.dojo-textarea, .create textarea {
   height: 200px;
   resize: none;
 }
+
+.v-snack__content {
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  text-align: center;
+}
+
 .dojo-btn, .create button {
   background: #f1356d;
   color: #fff;
-  border: 0;
-  padding: 6px 16px 8px 16px;
+  border: 2px solid #f1356d;
+  padding: 6px 16px 8px 16px !important;
   border-radius: 8px;
   cursor: pointer;
+  margin: 6px;
+}
+
+.dojo-btn-white {
+  background: white;
+  color: #f1356d;
+  border: 2px solid #f1356d;
+  font-weight: 700;
 }
 
 .dojo-btn:hover, .create button:hover {
   box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
   background-color: #f1356df0;
 }
+
+.dojo-btn-white:hover {
+  background-color: #fcfcfc;
+}
+
 /* 404 page */
 
 .not-found button {

@@ -33,6 +33,12 @@ export default {
       }
     }
   },
-  components: { Navbar }
+  components: { Navbar },
 };
 </script>
+
+<style>
+.v-application--wrap {
+  position: relative;
+}
+</style>
