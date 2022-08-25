@@ -16,7 +16,7 @@
             Are you sure you want do delete this blog?
           </v-card-title>
           <v-card-actions>
-            <button class="dojo-btn ml-auto" @click="_deleteBlog()">Delete</button>
+            <button :disabled="_disabled" class="dojo-btn ml-auto" @click="_deleteBlog()">Delete</button>
             <button class="dojo-btn dojo-btn-white" @click="dialog = false">Cancel</button>
           </v-card-actions>
         </v-card>
@@ -30,7 +30,8 @@ export default {
   data () {
     return {
       requestCompleted: false,
-      dialog: false
+      dialog: false,
+      _disabled: false
     }
   },
   computed: {
@@ -46,9 +47,19 @@ export default {
     ...mapActions(['getBlogDetail', 'deleteBlog']),
     _deleteBlog () {
       let self = this
+      self._disabled = true
       this.deleteBlog(this.blog.id)
       .then(() => {
+        self.$notify({
+          title: '',
+          text: 'Blog Successfully Deleted!',
+          duration: 3000,
+          type: 'success'
+        })
         self.$router.push({name: 'Home'})        
+      })
+      .finally(() => {
+        _self._disabled = false
       })
     }
   },

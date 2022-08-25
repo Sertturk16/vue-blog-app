@@ -16,7 +16,7 @@
         v-model="body"
         placeholder="Body"
       />
-      <button @click.prevent="_createNewBlog()">Add Blog</button>
+      <button :disabled="_disabled" @click.prevent="_createNewBlog()">Add Blog</button>
     </form>
   </div>
 </template>
@@ -28,13 +28,23 @@ export default {
     return {
       title: '',
       body: '',
-      toast: false
+      _disabled: false
     }
   },
   methods: {
     ...mapActions(['getUserBlogs','createNewBlog']),
     _createNewBlog() {
       let self = this
+      if (self.body === '' || self.title === '') {
+        self.$notify({
+          title: '',
+          text: 'Title and body cannot be blank!',
+          duration: 3000,
+          type: 'error'
+        })
+        return
+      }
+      self._disabled = true
       this.createNewBlog({body: this.body, title: this.title})
       .then(() => {
         self.title = ''
@@ -46,6 +56,12 @@ export default {
           type: 'success'
         })
         self.$router.push({name: 'Home'})
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        _self.disabled = false
       })
     }
   },
