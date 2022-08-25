@@ -74,9 +74,7 @@ export default {
   methods: {
     ...mapActions(['logout']),
     _logout () {
-      this.$user.set({role: 'guest'})
       this.logout()
-      this.$router.push({name: 'Home'})
     },
     setMobile () {
       this.mobile = window.innerWidth < 800
