@@ -38,7 +38,8 @@ export default {
       blog: state => state.blog.blogDetail
     }),
     visibleDelete () {
-      return this.blog.user_id === JSON.parse(localStorage.getItem('user')).id
+      let user = JSON.parse(localStorage.getItem('user'))
+      return user && this.blog.user_id === user.id
     }
   },
   methods: {
