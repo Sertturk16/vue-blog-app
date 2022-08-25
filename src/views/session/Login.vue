@@ -58,6 +58,9 @@ export default {
         return
       }
       this.login({email: this.email, password: this.password})
+      .then(() => {
+        window.location.reload()
+      })
       .catch((err) => {
         if(err === 400) {
           this.error = true

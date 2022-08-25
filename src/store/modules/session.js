@@ -47,6 +47,7 @@ const actions = {
   logout ({commit}) {
     commit('_setToken', '')
     commit('_setUser', null)
+    window.location.reload()
   },
   startTimer ({dispatch}, payload) {
     console.log(payload)

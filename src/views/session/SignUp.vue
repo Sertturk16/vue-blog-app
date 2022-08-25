@@ -104,7 +104,11 @@ export default {
         username: this.username,
         email: this.email,
         password: this.password
-      }).catch((err) => {
+      })
+      .then(() => {
+        window.location.reload()
+      })
+      .catch((err) => {
         if(err === 400) {
           this.invalid = true
         }  
