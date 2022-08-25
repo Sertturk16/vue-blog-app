@@ -17,16 +17,6 @@
         placeholder="Body"
       />
       <button @click.prevent="_createNewBlog()">Add Blog</button>
-      <v-snackbar
-      v-model="toast"
-      top
-      right
-      :timeout="1000"
-      color="#f1356d"
-      width="auto"
-      >
-      Blog Successfully Created!
-      </v-snackbar>
     </form>
   </div>
 </template>
@@ -47,9 +37,14 @@ export default {
       let self = this
       this.createNewBlog({body: this.body, title: this.title})
       .then(() => {
-        self.toast = true
         self.title = ''
         self.body = ''
+        self.$notify({
+          title: '',
+          text: 'Blog Successfully Created!',
+          duration: 3000,
+          type: 'success'
+        })
       })
     }
   },

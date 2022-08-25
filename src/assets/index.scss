@@ -6,6 +6,27 @@
   font-family: "Quicksand";
   color: #333;
 }
+.v-application {
+  .vue-notification-group {
+    top: 10px !important;
+    right: 10px !important;
+  }
+  .vue-notification {
+    border-radius: 10px;
+    &.success {
+      background-color: #f1356d !important;
+      border: 2px solid #f1356d80 !important;
+      .notification-title {
+        font-size: 24px;
+        color: white;
+      }
+      .notification-content {
+        font-size: 16px;
+        color: white;
+      }
+    }
+  }
+}
 .v-navigation-drawer--close {
   width: 0 !important;
 }

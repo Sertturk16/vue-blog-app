@@ -5,12 +5,12 @@ import VueRouterUserRoles from "vue-router-user-roles"
 import store from './store'
 import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore";
-
-import './assets/index.css'
+import Notifications from 'vue-notification'
+import "./assets/index.scss"
 import vuetify from './plugins/vuetify'
 
 Vue.use(VueRouterUserRoles, { router })
-
+Vue.use(Notifications)
 Vue.config.productionTip = false
 
 const firebaseConfig = {

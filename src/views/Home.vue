@@ -1,7 +1,8 @@
 <template>
   <div class="home">
-    <BlogList v-if="blogs.length > 0" title="All Blogs" :blogs="blogs"></BlogList>
+    <BlogList v-if="blogs.length > 0 && $user.get().role === 'guest'" title="All Blogs" :blogs="blogs"></BlogList>
     <BlogList v-if="$user.get().role === 'user' && user_blogs.length > 0" title="My Blogs" :blogs="user_blogs"></BlogList>
+    <BlogList v-if="$user.get().role === 'user' && filteredBlogs.length > 0" title="Other Blogs" :blogs="filteredBlogs"></BlogList>
     <div v-if="blogs.length === 0 && user_blogs.length === 0">There is no blog yet...</div>
   </div>
 </template>
@@ -19,7 +20,13 @@ export default {
     ...mapState({
       blogs: state => state.blog.blogs,
       user_blogs: state => state.blog.user_blogs
-    })
+    }),
+    filteredBlogs () {
+      let user = JSON.parse(localStorage.getItem('user'))
+      if (user) {
+        return this.blogs.filter(item => item.user_id !== user.id)
+      } else return []
+    }
   },
   methods: {
     ...mapActions(['getAllBlogs', 'getUserBlogs'])

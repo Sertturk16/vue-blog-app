@@ -45,6 +45,8 @@ const actions = {
   getAllBlogs ({ commit }, payload) {
     return new Promise((resolve, reject) => {
       let ref = collection(db, 'blogs')
+      let user = JSON.parse(localStorage.getItem('user'))
+      if (!user) {
         getDocs(ref)
         .then(res => {
           let arr = []
@@ -54,6 +56,17 @@ const actions = {
         state.blogs = [...arr]
         resolve()
       })
+      } else {
+        getDocs(query(ref, where('user_id', '==', user.id)))
+        .then(res => {
+            let arr = []
+            res.forEach(item => {
+              arr.push({...item.data(), id: item.id})
+            })
+            state.user_blogs = [...arr]
+            resolve()
+        })
+      }
     })
   },
   getBlogDetail ({ commit }, payload) {

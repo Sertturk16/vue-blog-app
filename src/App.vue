@@ -4,11 +4,11 @@
     <v-main class="content">
       <router-view/>
     </v-main>
+    <notifications></notifications>
   </v-app>
 </template>
 
 <script>
-import { Application } from 'vuetify/lib/services';
 import { mapActions, mapMutations } from 'vuex';
 import Navbar from './components/Navbar.vue';
 export default {
