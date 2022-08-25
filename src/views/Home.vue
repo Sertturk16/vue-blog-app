@@ -22,10 +22,11 @@ export default {
       user_blogs: state => state.blog.user_blogs
     }),
     filteredBlogs () {
-      let user = JSON.parse(localStorage.getItem('user'))
-      if (user) {
-        return this.blogs.filter(item => item.user_id !== user.id)
-      } else return []
+      if (this.$user.get().role === 'user') {
+        return this.blogs.filter(item => item.user_id !== JSON.parse(localStorage.getItem('user')).id)
+      } else {
+        return []
+      }
     }
   },
   methods: {
