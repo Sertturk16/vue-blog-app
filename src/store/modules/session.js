@@ -1,56 +1,60 @@
 import Vue from "vue"
 import {doc, getDoc, setDoc} from 'firebase/firestore'
-import { $service } from "@/custom_axios"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { db } from "@/main"
 const state = {
-  isUser: false,
   token: '',
-  user: null
 }
 const getters = {}
 const actions = {
   signUp ({commit, dispatch} ,payload) {
     return new Promise((resolve, reject) => {
-      console.log(payload)
-      $service.signUp.post('', {email: payload.email, password: payload.password, returnSecureToken: true}).then((res) => {
-        let ref = doc(db, "users", res.data.localId)
+      const auth = getAuth()
+      createUserWithEmailAndPassword(auth, payload.email, payload.password)
+      .then((res) => {
+        console.log(res)
+        let ref = doc(db, "users", res.user.uid)
         setDoc(ref, {email: payload.email, first_name: payload.first_name, last_name: payload.last_name, username: payload.username})
         .then(() => {
-          commit('_setToken', res.data.idToken)
-          localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
-          dispatch('startTimer', res.data.expiresIn*1000)
-          commit('_setUser', payload)
+          commit('_setToken', res._tokenResponse.idToken)
+          localStorage.setItem('expires_in', new Date().getTime() + +res._tokenResponse.expiresIn*1000)
+          dispatch('startTimer', res._tokenResponse.expiresIn*1000)
+          commit('_setUser', {id: res.user.uid, ...payload})
           resolve()
         })
-      }).catch((err) => {
-        reject(err.response.status)
+      })
+      .catch(err => {
+        reject(err)
       })
     })
   },
   login ({commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      $service.login.post('', {email: payload.email, password: payload.password, returnSecureToken: true})
+      const auth = getAuth()
+      signInWithEmailAndPassword(auth, payload.email, payload.password)
       .then((res) => {
-        let ref = doc(db, "users", res.data.localId)
+        let ref = doc(db, "users", res.user.uid)
         getDoc(ref).then(user => {
-          commit('_setUser', {...user.data(), id: res.data.localId})
-          commit('_setToken', res.data.idToken)
-          localStorage.setItem('expires_in', new Date().getTime() + +res.data.expiresIn*1000)
-          dispatch('startTimer', res.data.expiresIn*1000)
+          commit('_setUser', {...user.data(), id: res.user.uid})
+          commit('_setToken', res._tokenResponse.idToken)
+          localStorage.setItem('expires_in', new Date().getTime() + +res._tokenResponse.expiresIn*1000)
+          dispatch('startTimer', res._tokenResponse.expiresIn*1000)
           resolve()
         })
-      }).catch((err) => {
-        reject(err.response.status)
+      })
+      .catch((err) => {
+        reject(err)
       })
     })
   },
   logout ({commit}) {
-    commit('_setToken', '')
-    commit('_setUser', null)
-    window.location.reload()
+    const auth = getAuth()
+    signOut(auth).then(() => {
+      commit('_setToken', '')
+      commit('_setUser', null)
+    })
   },
   startTimer ({dispatch}, payload) {
-    console.log(payload)
     setTimeout(() => {
       dispatch('logout')
     }, payload)

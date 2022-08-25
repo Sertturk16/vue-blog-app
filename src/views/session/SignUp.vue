@@ -70,9 +70,6 @@
           v => !!v || ''
         ]"
       ></v-text-field>
-      <div class="dojo-alert">
-        <p v-if="invalid">The information you entered is invalid.</p>
-      </div>
       <button @click.prevent="_signUp" class="dojo-btn">Sign Up</button>
     </v-form>
   </div>
@@ -93,9 +90,13 @@ export default {
   methods: {
     ...mapActions(['signUp']),
     _signUp() {
-      this.invalid = false
       if (this.$refs.signUpForm.validate() === false) {
-        this.invalid = true
+        self.$notify({
+          title: 'Error',
+          text: 'The information you entered is invalid!',
+          duration: 3000,
+          type: 'error'
+        })
         return
       }
       this.signUp({
@@ -105,13 +106,15 @@ export default {
         email: this.email,
         password: this.password
       })
-      .then(() => {
-        window.location.reload()
-      })
       .catch((err) => {
-        if(err === 400) {
-          this.invalid = true
-        }  
+        if (err.code === 'auth/email-already-in-use') {
+          self.$notify({
+          title: 'Error',
+          text: 'This email is already in use!',
+          duration: 3000,
+          type: 'error'
+        })
+        }
       })
     }
   }

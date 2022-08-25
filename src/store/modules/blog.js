@@ -12,7 +12,6 @@ const actions = {
     return new Promise(resolve => {
       let ref = doc(db, "blogs", payload)
       deleteDoc(ref).then(res => {
-        console.log(res)
         resolve()
       })
     })
@@ -22,7 +21,6 @@ const actions = {
       let user = JSON.parse(localStorage.getItem('user'))
       let ref = collection(db, "blogs")
       addDoc(ref, {author: `${user.first_name} ${user.last_name}`, title: payload.title, body: payload.body, user_id: user.id}).then(res => {
-        console.log(res)
         resolve()
       })
     })
@@ -37,7 +35,7 @@ const actions = {
             res.forEach(item => {
               arr.push({...item.data(), id: item.id})
             })
-            state.user_blogs = [...arr]
+            commit('_getUserBlogs', arr)
             resolve()
         })
     })
@@ -51,7 +49,7 @@ const actions = {
           res.forEach(item => {
             arr.push({...item.data(), id: item.id})
           })
-        state.blogs = [...arr]
+        commit('_getAllBlogs', arr)
         resolve()
       })
     })
@@ -60,13 +58,23 @@ const actions = {
     return new Promise((resolve, reject) => {
       let ref = doc(db, 'blogs', payload)
       getDoc(ref).then(res => {
-        state.blogDetail = {id: res.id, ...res.data()}
+        commit('_getBlogDetail', {id: res.id, ...res.data()})
         resolve()
       })
     })
   }
 }
-const mutations = {}
+const mutations = {
+  _getBlogDetail(state, payload) {
+    state.blogDetail = payload
+  },
+  _getAllBlogs (state, payload) {
+    state.blogs = [...payload]
+  },
+  _getUserBlogs (state, payload) {
+    state.user_blogs = [...payload]
+  }
+}
 
 export default {
     state, getters, actions, mutations

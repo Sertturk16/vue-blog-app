@@ -13,17 +13,17 @@
   }
   .vue-notification {
     border-radius: 10px;
+    .notification-title {
+      font-size: 20px;
+      color: white;
+    }
+    .notification-content {
+      font-size: 16px;
+      color: white;
+    }
     &.success {
       background-color: #f1356d !important;
       border: 2px solid #f1356d80 !important;
-      .notification-title {
-        font-size: 24px;
-        color: white;
-      }
-      .notification-content {
-        font-size: 16px;
-        color: white;
-      }
     }
   }
 }

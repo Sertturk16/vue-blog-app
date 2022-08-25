@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { onAuthStateChanged, getAuth } from '@firebase/auth';
 import { mapActions, mapMutations } from 'vuex';
 import Navbar from './components/Navbar.vue';
 export default {
@@ -19,6 +20,14 @@ export default {
   methods: {
     ...mapMutations(['_setToken']),
     ...mapActions(['startTimer'])
+  },
+  created () {
+    const auth = getAuth()
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        this.$router.push({name: 'Home'})
+      }
+    })
   },
   mounted () {
     let token = localStorage.getItem('token')

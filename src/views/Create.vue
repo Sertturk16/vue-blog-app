@@ -45,6 +45,7 @@ export default {
           duration: 3000,
           type: 'success'
         })
+        self.$router.push({name: 'Home'})
       })
     }
   },

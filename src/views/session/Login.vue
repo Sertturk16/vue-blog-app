@@ -31,9 +31,6 @@
           ]"
           v-model="password"
         ></v-text-field>
-        <div class="dojo-alert">
-          <p v-if="error">Your email or password is invalid</p>
-        </div>
         <button class="dojo-btn" @click.prevent="_login">Login</button>
       </v-form>
     </div>
@@ -47,24 +44,30 @@ export default {
   data: () => ({
     email: null,
     password: null,
-    error: false
   }),
   methods: {
     ...mapActions(['login']),
     _login() {
-      this.error = false
+      let self = this
       if (this.$refs.loginForm.validate() === false) {
-        this.error = true
+        self.$notify({
+          title: 'Error',
+          text: 'Your email or password is invalid!',
+          duration: 3000,
+          type: 'error'
+        })
         return
       }
       this.login({email: this.email, password: this.password})
-      .then(() => {
-        window.location.reload()
-      })
-      .catch((err) => {
-        if(err === 400) {
-          this.error = true
-        }  
+      .catch(err => {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+          self.$notify({
+          title: 'Error',
+          text: 'Your email or password is invalid!',
+          duration: 3000,
+          type: 'error'
+        })
+        }
       })
     }
   }
