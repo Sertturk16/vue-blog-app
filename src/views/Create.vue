@@ -32,7 +32,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getUserBlogs','createNewBlog']),
+    ...mapActions(['createNewBlog']),
     _createNewBlog() {
       let self = this
       if (self.body === '' || self.title === '') {
@@ -66,7 +66,6 @@ export default {
     }
   },
   mounted () {
-    this.getUserBlogs()
   }
 }
 </script>

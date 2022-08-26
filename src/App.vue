@@ -10,8 +10,7 @@
 
 <script>
 import { db } from './main';
-import { onAuthStateChanged, getAuth } from '@firebase/auth';
-import { getDoc, doc } from '@firebase/firestore';
+import { getDoc, doc} from '@firebase/firestore';
 import { mapActions } from 'vuex';
 import Navbar from './components/Navbar.vue';
 export default {
@@ -20,30 +19,17 @@ export default {
   data: () => ({
   }),
   methods: {
-    ...mapActions(['startTimer'])
+    ...mapActions(['setUser'])
   },
   created () {
     const self = this
-    const auth = getAuth()
-    onAuthStateChanged(auth, user => {
-      console.log(user)
-      if (!user) {
-        localStorage.removeItem('user')
-        self.$user.set({role: 'guest'})
-      } else {
-        let ref = doc(db, 'users', user.uid)
-        getDoc(ref)
-        .then(res => {
-          localStorage.setItem('user', JSON.stringify({id: user.uid, first_name: res.data().first_name, last_name: res.data().last_name}))
-          self.$user.set({role: 'user'})
-        })
-        .then(() => {
-          if (self.$route.name !== 'Home') {
-            self.$router.push({name: 'Home'})
-          }
-        })
-      }
-    })
+    let user_id = localStorage.getItem('user_id')
+    if (user_id !== null) {
+      let ref = doc(db, 'users', user_id)
+      getDoc(ref).then(user => {
+        self.setUser({id: user.id, ...user.data()})
+      })
+    }
   },
   mounted () {
     

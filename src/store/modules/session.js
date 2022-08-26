@@ -1,8 +1,8 @@
-import Vue from "vue"
 import {doc, getDoc, setDoc} from 'firebase/firestore'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { db } from "@/main"
 const state = {
+  user: null
 }
 const getters = {}
 const actions = {
@@ -11,14 +11,26 @@ const actions = {
       const auth = getAuth()
       createUserWithEmailAndPassword(auth, payload.email, payload.password)
       .then((res) => {
-        console.log(res)
         let ref = doc(db, "users", res.user.uid)
         setDoc(ref, {email: payload.email, first_name: payload.first_name, last_name: payload.last_name, username: payload.username})
         .then(() => {
+          commit('_setUser',{id: user.id, ...user.data()})
           resolve()
         })
       })
       .catch(err => {
+        reject(err)
+      })
+    })
+  },
+  resetPassword ({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      const auth = getAuth();
+      sendPasswordResetEmail(auth, payload)
+      .then(() => {
+        resolve()
+      })
+      .catch((err) => {
         reject(err)
       })
     })
@@ -30,6 +42,7 @@ const actions = {
       .then((res) => {
         let ref = doc(db, "users", res.user.uid)
         getDoc(ref).then(user => {
+          commit('_setUser',{id: user.id, ...user.data()})
           resolve()
         })
       })
@@ -38,6 +51,9 @@ const actions = {
       })
     })
   },
+  setUser ({commit}, payload) {
+    commit('_setUser', payload)
+  },
   logout ({commit}) {
     const auth = getAuth()
     signOut(auth).then(() => {
@@ -45,6 +61,9 @@ const actions = {
   },
 }
 const mutations = {
+  _setUser (state, payload) {
+    state.user = payload
+  }
 }
 
 export default {

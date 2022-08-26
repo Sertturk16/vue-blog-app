@@ -5,6 +5,7 @@ import VueRouterUserRoles from "vue-router-user-roles"
 import store from './store'
 import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Notifications from 'vue-notification'
 import "./assets/index.scss"
 import vuetify from './plugins/vuetify'
@@ -25,6 +26,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app);
+
+const auth = getAuth()
+  onAuthStateChanged(auth, user => {
+  if (!user) {
+    localStorage.removeItem('user_id')
+    Vue.prototype.$user.set({role: 'guest'})
+  } else {
+    localStorage.setItem('user_id', user.uid)
+    Vue.prototype.$user.set({role: 'user'})
+  }
+})
 
 Vue.prototype.$user.set({role: 'guest'})
 

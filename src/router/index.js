@@ -6,6 +6,7 @@ import Create from '../views/Create'
 import BlogDetail from '../views/BlogDetail'
 import Login from '../views/session/Login'
 import SignUp from '../views/session/SignUp'
+import ForgotPassword from '../views/session/ForgotPassword'
 Vue.use(VueRouter)
 
 const routes = [
@@ -37,6 +38,20 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: {
+      permissions: [
+        {
+        role: 'user',
+        access: false,
+        redirect: 'Home'
+        }
+      ]
+    }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword,
     meta: {
       permissions: [
         {

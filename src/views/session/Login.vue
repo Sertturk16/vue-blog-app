@@ -31,6 +31,7 @@
           ]"
           v-model="password"
         ></v-text-field>
+        <router-link class="mb-2" :to="{name: 'ForgotPassword'}">Forgot Password?</router-link>
         <button class="dojo-btn" @click.prevent="_login">Login</button>
       </v-form>
     </div>

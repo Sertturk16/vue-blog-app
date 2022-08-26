@@ -1,6 +1,6 @@
 import { db } from "@/main"
 import {addDoc, doc, collection, getDoc, getDocs, query, where, deleteDoc} from 'firebase/firestore'
-
+import store from "@/store"
 const state = {
   blogs: [],
   blogDetail: {},
@@ -12,24 +12,25 @@ const actions = {
     return new Promise(resolve => {
       let ref = doc(db, "blogs", payload)
       deleteDoc(ref).then(res => {
+        commit('_deleteBlog', payload)
         resolve()
       })
     })
   },
   createNewBlog ({ commit }, payload) {
     return new Promise(resolve => {
-      let user = JSON.parse(localStorage.getItem('user'))
+      let user = store.state.session.user
       let ref = collection(db, "blogs")
-      addDoc(ref, {author: `${user.first_name} ${user.last_name}`, title: payload.title, body: payload.body, user_id: user.id}).then(res => {
+      addDoc(ref, {author: user.username, title: payload.title, body: payload.body, user_id: user.id}).then(res => {
+        commit('_createNewBlog', {id: res.id, author: user.username, title: payload.title, body: payload.body, user_id: user.id})
         resolve()
       })
     })
   },
   getUserBlogs ({ commit }, payload) {
     return new Promise(resolve => {
-        let user = JSON.parse(localStorage.getItem('user'))
         let ref = collection(db, 'blogs')
-        getDocs(query(ref, where('user_id', '==', user.id)))
+        getDocs(query(ref, where('user_id', '==', payload)))
         .then(res => {
             let arr = []
             res.forEach(item => {
@@ -73,7 +74,13 @@ const mutations = {
   },
   _getUserBlogs (state, payload) {
     state.user_blogs = [...payload]
-  }
+  },
+  _deleteBlog (state, payload) {
+    state.blogs = state.blogs.filter(item => item.id !== payload)
+  },
+  _createNewBlog (state, payload) {
+    state.blogs.push(payload)
+  },
 }
 
 export default {

@@ -1,9 +1,9 @@
 <template>
   <div class="home">
     <BlogList v-if="blogs.length > 0 && $user.get().role === 'guest'" title="All Blogs" :blogs="blogs"></BlogList>
-    <BlogList v-if="$user.get().role === 'user' && user_blogs.length > 0" title="My Blogs" :blogs="user_blogs"></BlogList>
+    <BlogList v-if="$user.get().role === 'user' && userBlogs.length > 0" title="My Blogs" :blogs="userBlogs"></BlogList>
     <BlogList v-if="$user.get().role === 'user' && filteredBlogs.length > 0" title="Other Blogs" :blogs="filteredBlogs"></BlogList>
-    <div v-if="blogs.length === 0 && user_blogs.length === 0">There is no blog yet...</div>
+    <div v-if="blogs.length === 0 && userBlogs.length === 0">There is no blog yet...</div>
   </div>
 </template>
 
@@ -19,24 +19,28 @@ export default {
   computed: {
     ...mapState({
       blogs: state => state.blog.blogs,
-      user_blogs: state => state.blog.user_blogs
+      user: state => state.session.user
     }),
     filteredBlogs () {
-      if (this.$user.get().role === 'user') {
-        return this.blogs.filter(item => item.user_id !== JSON.parse(localStorage.getItem('user')).id)
+      if (this.$user.get().role === 'user' && this.user !== null) {
+        return this.blogs.filter(item => item.user_id !== this.user.id)
+      } else {
+        return []
+      }
+    },
+    userBlogs () {
+      if (this.$user.get().role === 'user' && this.user !== null) {
+        return this.blogs.filter(item => item.user_id === this.user.id)
       } else {
         return []
       }
     }
   },
   methods: {
-    ...mapActions(['getAllBlogs', 'getUserBlogs'])
+    ...mapActions(['getAllBlogs'])
   },
-  created () {
+  mounted () {
     this.getAllBlogs()
-    if (this.$user.get().role === 'user') {
-      this.getUserBlogs()
-    }
   }
 }
 </script>
