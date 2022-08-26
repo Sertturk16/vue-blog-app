@@ -16,7 +16,7 @@
         v-model="body"
         placeholder="Body"
       />
-      <button :disabled="_disabled" @click.prevent="_createNewBlog()">Add Blog</button>
+      <button :disabled="disabled_" @click.prevent="_createNewBlog()">Add Blog</button>
     </form>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
     return {
       title: '',
       body: '',
-      _disabled: false
+      disabled_: false
     }
   },
   methods: {
@@ -44,7 +44,7 @@ export default {
         })
         return
       }
-      self._disabled = true
+      self.disabled_ = true
       this.createNewBlog({body: this.body, title: this.title})
       .then(() => {
         self.title = ''
@@ -61,7 +61,7 @@ export default {
         console.log(err)
       })
       .finally(() => {
-        _self.disabled = false
+        self.disabled = false
       })
     }
   },

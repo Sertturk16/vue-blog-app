@@ -26,11 +26,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app);
 
-if (localStorage.getItem('token')) {
-  Vue.prototype.$user.set({role: 'user'})
-} else {
-  Vue.prototype.$user.set({role: 'guest'})
-}
+Vue.prototype.$user.set({role: 'guest'})
+
 new Vue({
   router,
   store,

@@ -9,8 +9,10 @@
 </template>
 
 <script>
+import { db } from './main';
 import { onAuthStateChanged, getAuth } from '@firebase/auth';
-import { mapActions, mapMutations } from 'vuex';
+import { getDoc, doc } from '@firebase/firestore';
+import { mapActions } from 'vuex';
 import Navbar from './components/Navbar.vue';
 export default {
   name: 'App',
@@ -18,29 +20,33 @@ export default {
   data: () => ({
   }),
   methods: {
-    ...mapMutations(['_setToken']),
     ...mapActions(['startTimer'])
   },
   created () {
+    const self = this
     const auth = getAuth()
     onAuthStateChanged(auth, user => {
+      console.log(user)
       if (!user) {
-        this.$router.push({name: 'Home'})
+        localStorage.removeItem('user')
+        self.$user.set({role: 'guest'})
+      } else {
+        let ref = doc(db, 'users', user.uid)
+        getDoc(ref)
+        .then(res => {
+          localStorage.setItem('user', JSON.stringify({id: user.uid, first_name: res.data().first_name, last_name: res.data().last_name}))
+          self.$user.set({role: 'user'})
+        })
+        .then(() => {
+          if (self.$route.name !== 'Home') {
+            self.$router.push({name: 'Home'})
+          }
+        })
       }
     })
   },
   mounted () {
-    let token = localStorage.getItem('token')
-    let expires_in = localStorage.getItem('expires_in')
-    let now = new Date().getTime()
-    if (token) {
-      if (now > expires_in) {
-        this._setToken('')
-      } else {
-        this.startTimer(expires_in - now)
-        this._setToken(token)
-      }
-    }
+    
   },
   components: { Navbar },
 };

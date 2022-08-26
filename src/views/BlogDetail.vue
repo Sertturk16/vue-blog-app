@@ -16,7 +16,7 @@
             Are you sure you want do delete this blog?
           </v-card-title>
           <v-card-actions>
-            <button :disabled="_disabled" class="dojo-btn ml-auto" @click="_deleteBlog()">Delete</button>
+            <button :disabled="disabled_" class="dojo-btn ml-auto" @click="_deleteBlog()">Delete</button>
             <button class="dojo-btn dojo-btn-white" @click="dialog = false">Cancel</button>
           </v-card-actions>
         </v-card>
@@ -31,7 +31,7 @@ export default {
     return {
       requestCompleted: false,
       dialog: false,
-      _disabled: false
+      disabled_: false
     }
   },
   computed: {
@@ -47,7 +47,7 @@ export default {
     ...mapActions(['getBlogDetail', 'deleteBlog']),
     _deleteBlog () {
       let self = this
-      self._disabled = true
+      self.disabled_ = true
       this.deleteBlog(this.blog.id)
       .then(() => {
         self.$notify({
@@ -59,7 +59,7 @@ export default {
         self.$router.push({name: 'Home'})        
       })
       .finally(() => {
-        _self._disabled = false
+        self.disabled_ = false
       })
     }
   },

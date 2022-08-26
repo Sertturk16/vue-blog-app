@@ -90,10 +90,27 @@ export default {
   methods: {
     ...mapActions(['signUp']),
     _signUp() {
+      let self = this
       if (this.$refs.signUpForm.validate() === false) {
         self.$notify({
           title: 'Error',
           text: 'The information you entered is invalid!',
+          duration: 3000,
+          type: 'error'
+        })
+        return
+      } else if (self.password.length < 8) {
+        self.$notify({
+          title: 'Error',
+          text: 'Your password must be at least 8 characters!',
+          duration: 3000,
+          type: 'error'
+        })
+        return
+      } else if (!self.password.match(/[a-z]/g) || !self.password.match(/[A-Z]/g) || !self.password.match(/[0-9]/g)) {
+        self.$notify({
+          title: 'Error',
+          text: 'Your password should contain lowercase letters, uppercase letters and numbers!',
           duration: 3000,
           type: 'error'
         })
